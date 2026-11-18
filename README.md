@@ -1,6 +1,6 @@
-# FlipClock Desktop
+# FlipTime
 
-A Windows desktop implementation inspired by the AFlipClock website. The clock face is the home screen: two large flip panels with the date and AM/PM on the hour card, and the weekday and live seconds on the minute card. The packaged desktop window is frameless, transparent around the cards, draggable, and always on top. Settings open from the gear; timers and other tools stay in a separate tools drawer.
+FlipTime is a Windows desktop implementation inspired by the AFlipClock website. The clock face is the home screen: two large flip panels with the date and AM/PM on the hour card, and the weekday and live seconds on the minute card. The packaged desktop window is frameless, transparent around the cards, draggable, and always on top. Settings open from the gear; timers and other tools stay in a separate tools drawer.
 
 ## Included
 
@@ -13,7 +13,7 @@ A Windows desktop implementation inspired by the AFlipClock website. The clock f
 
 ## Run on Windows
 
-For an app-style preview using Microsoft Edge, double-click `Open FlipClock.cmd`. This does not install anything. Keep the project folder in place so the launcher can find the clock files. Edge cannot make its native window transparent; use the packaged Electron desktop app for the transparent floating window.
+For an app-style preview using Microsoft Edge, double-click `Open FlipTime.cmd`. This does not install anything. Keep the project folder in place so the launcher can find the clock files. Edge cannot make its native window transparent; use the packaged Electron desktop app for the transparent floating window.
 
 Install Node.js (which includes npm), open a terminal in this folder, then run:
 

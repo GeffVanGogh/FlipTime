@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FlipClock Desktop</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="saver-themes.css"><link rel="stylesheet" href="floating.css">
+<title>FlipTime</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="saver-themes.css"><link rel="stylesheet" href="floating.css">
 </head>
 <body>
 <div class="app-shell">
   <aside class="sidebar">
-    <div class="brand"><div class="brand-icon">▰</div><div><b>flipclock</b><small>DESKTOP</small></div></div>
+    <div class="brand"><div class="brand-icon">▰</div><div><b>fliptime</b><small>DESKTOP</small></div></div>
     <div class="nav-label">YOUR DESK</div>
     <nav id="nav">
       <button class="nav-item active" data-page="clock"><span>◷</span> Flip clock</button>
@@ -52,7 +52,7 @@
     <section class="page" id="page-timer"><div class="tool-card"><span class="eyebrow">COUNT DOWN</span><h2>Timer</h2><p class="muted">Set a duration and let it run in the background.</p><div class="time-inputs"><label><input id="timerMinutes" type="number" min="0" max="999" value="5"><span>minutes</span></label><b>:</b><label><input id="timerSeconds" type="number" min="0" max="59" value="0"><span>seconds</span></label></div><div class="tool-dial" id="timerReadout">05:00</div><div class="tool-actions"><button class="button primary" id="timerStart">Start timer</button><button class="button secondary" id="timerReset">Reset</button></div></div></section>
     <section class="page" id="page-stopwatch"><div class="tool-card"><span class="eyebrow">ELAPSED TIME</span><h2>Stopwatch</h2><p class="muted">Track time with lap marks.</p><div class="tool-dial" id="stopwatchReadout">00:00.00</div><div class="tool-actions"><button class="button primary" id="stopwatchStart">Start</button><button class="button secondary" id="stopwatchLap">Lap</button><button class="button secondary" id="stopwatchReset">Reset</button></div><div class="laps" id="laps"></div></div></section>
     <section class="page" id="page-countdown"><div class="tool-card"><span class="eyebrow">A MOMENT AHEAD</span><h2>Countdown</h2><p class="muted">Choose a date and see how long remains.</p><label class="date-input">Event name<input id="eventName" value="Something to look forward to"></label><label class="date-input">Date and time<input id="eventDate" type="datetime-local"></label><div class="tool-dial compact" id="countdownReadout">Choose a date</div><div class="session-note" id="eventNameDisplay"></div></div></section>
-    <section class="page" id="page-alarm"><div class="tool-card"><span class="eyebrow">ON YOUR SCHEDULE</span><h2>Alarm</h2><p class="muted">Set an alarm that runs while FlipClock Desktop is open.</p><div class="alarm-form"><input id="alarmTime" type="time"><input id="alarmLabel" placeholder="Alarm name (optional)"><button class="button primary" id="addAlarm">Add alarm</button></div><div class="list" id="alarmList"></div></div></section>
+    <section class="page" id="page-alarm"><div class="tool-card"><span class="eyebrow">ON YOUR SCHEDULE</span><h2>Alarm</h2><p class="muted">Set an alarm that runs while FlipTime is open.</p><div class="alarm-form"><input id="alarmTime" type="time"><input id="alarmLabel" placeholder="Alarm name (optional)"><button class="button primary" id="addAlarm">Add alarm</button></div><div class="list" id="alarmList"></div></div></section>
     <section class="page" id="page-world"><div class="tool-card wide-card"><span class="eyebrow">AROUND THE WORLD</span><h2>World clock</h2><p class="muted">Add places to keep their local time close at hand.</p><div class="world-form"><input id="zoneSearch" placeholder="Search a city or time zone"><button class="button secondary" id="addZone">Add city</button></div><div class="world-grid" id="worldGrid"></div></div></section>
     <section class="page" id="page-holidays"><div class="tool-card wide-card"><span class="eyebrow">PLAN AROUND THE YEAR</span><h2>Holidays</h2><p class="muted">A local calendar of commonly observed holidays. Choose a region to view its dates.</p><div class="world-form"><select id="holidayRegion"><option value="US">United States</option><option value="GB">United Kingdom</option><option value="KE">Kenya</option></select><select id="holidayYear"></select></div><div class="list" id="holidayList"></div><p class="footnote">Holiday dates are provided as a planning aid and can vary by region or observance.</p></div></section>
     <footer class="footer">A calm little clock for your Windows desktop</footer>

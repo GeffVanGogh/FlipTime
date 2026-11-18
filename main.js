@@ -23,7 +23,7 @@ function createWindow() {
   win = new BrowserWindow({
     width: 640, height: 430, minWidth: 400, minHeight: 255, resizable: false, center: true,
     frame: false, transparent: true, hasShadow: false,
-    backgroundColor: '#00000000', title: 'FlipClock Desktop',
+    backgroundColor: '#00000000', title: 'FlipTime',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false }
   });
   win.setBounds(clampToWorkArea(win.getBounds(), screen.getPrimaryDisplay()));
