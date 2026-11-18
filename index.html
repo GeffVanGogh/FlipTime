@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FlipClock Desktop</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="saver-themes.css"><link rel="stylesheet" href="floating.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-icon">▰</div><div><b>flipclock</b><small>DESKTOP</small></div></div>
+    <div class="nav-label">YOUR DESK</div>
+    <nav id="nav">
+      <button class="nav-item active" data-page="clock"><span>◷</span> Flip clock</button>
+      <button class="nav-item" data-page="study"><span>◉</span> Study</button>
+      <button class="nav-item" data-page="timer"><span>◴</span> Timer</button>
+      <button class="nav-item" data-page="stopwatch"><span>⏱</span> Stopwatch</button>
+      <button class="nav-item" data-page="countdown"><span>▦</span> Countdown</button>
+      <button class="nav-item" data-page="alarm"><span>♧</span> Alarm</button>
+      <button class="nav-item" data-page="world"><span>◎</span> World clock</button>
+      <button class="nav-item" data-page="holidays"><span>✳</span> Holidays</button>
+    </nav>
+    <div class="sidebar-bottom"><span class="status-dot"></span> All times use your device clock</div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div class="topbar-actions"><button type="button" class="icon-btn pin-btn" id="pinApp" title="Lock clock in place" aria-label="Lock clock in place"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m16 3 5 5-5 1.5-4.5 4.5-1.5 5-3-3-3-3 5-1.5L13 7z"/><path d="m4 20 6-6"/></svg></button><button type="button" class="icon-btn close-btn" id="closeApp" title="Close app" aria-label="Close app">×</button></div></header>
+    <section class="page active" id="page-clock">
+      <div class="clock-layout">
+        <div class="clock-stage" id="clockStage" data-theme="dark" data-layout="horizontal">
+          <div class="clock-face" id="clockFace">
+            <div class="flip-panel hours-panel"><span class="panel-top" id="monthDay">Nov 13</span><div class="digit" id="hours">00</div><div class="panel-bottom"><span id="meridiem">PM</span></div></div>
+            <div class="flip-panel minutes-panel"><span class="panel-top" id="weekDay">Friday</span><div class="digit" id="minutes">00</div><div class="panel-bottom"><span id="seconds">00</span></div></div>
+          </div>
+        </div>
+        <aside class="control-card">
+          <div class="card-heading"><div><span class="eyebrow">MAKE IT YOURS</span><h2>Clock settings</h2></div></div>
+          <label class="field-label">THEME</label><div class="theme-grid" id="themes">
+            <button class="theme-choice selected" data-theme="dark"><i class="swatch dark"></i>Dark</button><button class="theme-choice" data-theme="light"><i class="swatch light"></i>Light</button><button class="theme-choice" data-theme="glass"><i class="swatch glass"></i>Glass</button><button class="theme-choice" data-theme="sand"><i class="swatch sand"></i>Sand</button>
+          </div>
+          <label class="field-label">FLIP STYLE</label><div class="segmented" id="flipStyles"><button class="selected" data-style="simple">Simple</button><button data-style="standard">Standard</button><button data-style="professional">Professional</button></div>
+          <label class="field-label">DISPLAY</label><div class="switch-row"><span>24-hour format</span><label class="switch"><input type="checkbox" id="format24"><i></i></label></div>
+          <div class="switch-row"><span>Show seconds</span><label class="switch"><input type="checkbox" id="showSeconds" checked><i></i></label></div>
+          <div class="switch-row"><span>Show date</span><label class="switch"><input type="checkbox" id="showDate" checked><i></i></label></div>
+          <label class="field-label">LAYOUT</label><div class="segmented" id="layouts"><button class="selected" data-layout="auto">Auto</button><button data-layout="horizontal">Horizontal</button><button data-layout="vertical">Vertical</button></div>
+          <label class="field-label range-label">SIZE <b id="sizeValue">100%</b></label><input class="range" id="sizeRange" type="range" min="65" max="120" value="100">
+          <label class="field-label range-label">CORNER RADIUS <b id="radiusValue">14px</b></label><input class="range" id="radiusRange" type="range" min="0" max="30" value="14">
+          <div class="control-actions"><button class="button secondary" id="resetClock">Reset</button><button class="button primary" id="previewSaver">⛶ Screensaver preview</button></div>
+          <div class="screensaver-strip"><div><b>Desktop screensaver</b><p id="saverHelp">Show the clock after your desktop has been idle.</p></div><div class="saver-options"><label class="switch"><input type="checkbox" id="saverEnabled"><i></i></label><select id="idleTime"><option value="300">5 minutes</option><option value="600">10 minutes</option><option value="900">15 minutes</option><option value="1800">30 minutes</option></select></div></div>
+        </aside>
+      </div>
+    </section>
+    <section class="page" id="page-study"><div class="tool-card"><span class="eyebrow">FOCUS SESSION</span><h2>Study timer</h2><p class="muted">A quiet rhythm for focused work and short breaks.</p><div class="study-tabs"><button class="selected" data-minutes="25">Focus · 25 min</button><button data-minutes="5">Short break · 5 min</button><button data-minutes="15">Long break · 15 min</button></div><div class="tool-dial" id="studyReadout">25:00</div><div class="tool-actions"><button class="button primary" id="studyStart">Start focus</button><button class="button secondary" id="studyReset">Reset</button></div><div class="session-note" id="sessionNote">Ready when you are</div></div></section>
+    <section class="page" id="page-timer"><div class="tool-card"><span class="eyebrow">COUNT DOWN</span><h2>Timer</h2><p class="muted">Set a duration and let it run in the background.</p><div class="time-inputs"><label><input id="timerMinutes" type="number" min="0" max="999" value="5"><span>minutes</span></label><b>:</b><label><input id="timerSeconds" type="number" min="0" max="59" value="0"><span>seconds</span></label></div><div class="tool-dial" id="timerReadout">05:00</div><div class="tool-actions"><button class="button primary" id="timerStart">Start timer</button><button class="button secondary" id="timerReset">Reset</button></div></div></section>
+    <section class="page" id="page-stopwatch"><div class="tool-card"><span class="eyebrow">ELAPSED TIME</span><h2>Stopwatch</h2><p class="muted">Track time with lap marks.</p><div class="tool-dial" id="stopwatchReadout">00:00.00</div><div class="tool-actions"><button class="button primary" id="stopwatchStart">Start</button><button class="button secondary" id="stopwatchLap">Lap</button><button class="button secondary" id="stopwatchReset">Reset</button></div><div class="laps" id="laps"></div></div></section>
+    <section class="page" id="page-countdown"><div class="tool-card"><span class="eyebrow">A MOMENT AHEAD</span><h2>Countdown</h2><p class="muted">Choose a date and see how long remains.</p><label class="date-input">Event name<input id="eventName" value="Something to look forward to"></label><label class="date-input">Date and time<input id="eventDate" type="datetime-local"></label><div class="tool-dial compact" id="countdownReadout">Choose a date</div><div class="session-note" id="eventNameDisplay"></div></div></section>
+    <section class="page" id="page-alarm"><div class="tool-card"><span class="eyebrow">ON YOUR SCHEDULE</span><h2>Alarm</h2><p class="muted">Set an alarm that runs while FlipClock Desktop is open.</p><div class="alarm-form"><input id="alarmTime" type="time"><input id="alarmLabel" placeholder="Alarm name (optional)"><button class="button primary" id="addAlarm">Add alarm</button></div><div class="list" id="alarmList"></div></div></section>
+    <section class="page" id="page-world"><div class="tool-card wide-card"><span class="eyebrow">AROUND THE WORLD</span><h2>World clock</h2><p class="muted">Add places to keep their local time close at hand.</p><div class="world-form"><input id="zoneSearch" placeholder="Search a city or time zone"><button class="button secondary" id="addZone">Add city</button></div><div class="world-grid" id="worldGrid"></div></div></section>
+    <section class="page" id="page-holidays"><div class="tool-card wide-card"><span class="eyebrow">PLAN AROUND THE YEAR</span><h2>Holidays</h2><p class="muted">A local calendar of commonly observed holidays. Choose a region to view its dates.</p><div class="world-form"><select id="holidayRegion"><option value="US">United States</option><option value="GB">United Kingdom</option><option value="KE">Kenya</option></select><select id="holidayYear"></select></div><div class="list" id="holidayList"></div><p class="footnote">Holiday dates are provided as a planning aid and can vary by region or observance.</p></div></section>
+    <footer class="footer">A calm little clock for your Windows desktop</footer>
+  </main>
+</div>
+<div class="dock-cluster">
+  <nav class="tool-dock" id="toolDock" aria-label="Clock tools">
+    <button type="button" data-tool="settings" title="Settings" aria-label="Settings">⚙</button>
+    <button type="button" data-tool="study" title="Study timer" aria-label="Study timer">◉</button>
+    <button type="button" data-tool="timer" title="Timer" aria-label="Timer">◴</button>
+    <button type="button" data-tool="stopwatch" title="Stopwatch" aria-label="Stopwatch">⏱</button>
+    <button type="button" data-tool="countdown" title="Countdown" aria-label="Countdown">▦</button>
+    <button type="button" data-tool="alarm" title="Alarm" aria-label="Alarm">♧</button>
+    <button type="button" data-tool="world" title="World clock" aria-label="World clock">◎</button>
+    <button type="button" data-tool="holidays" title="Holidays" aria-label="Holidays">✳</button>
+  </nav>
+  <div class="resize-grip" id="resizeGrip" title="Drag to resize evenly" aria-label="Resize clock proportionally"><i></i><i></i><i></i></div>
+</div>
+<div class="screensaver" id="screensaver"><div class="saver-date" id="saverDate"></div><div class="saver-time" id="saverTime"></div><div class="saver-hint">Move your mouse or press a key to return</div></div>
+<div class="toast" id="toast"></div>
+<script src="layout.js"></script><script src="app.js"></script>
+</body></html>

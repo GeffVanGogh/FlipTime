@@ -1,0 +1,9 @@
+{
+  "name": "flipclock-desktop",
+  "version": "0.1.0",
+  "description": "A personal Windows flip clock and clock tools suite.",
+  "main": "main.js",
+  "scripts": { "start": "electron .", "pack": "electron-builder --dir", "dist": "electron-builder" },
+  "devDependencies": { "electron": "^39.0.0", "electron-builder": "^26.0.12" },
+  "build": { "appId": "local.flipclock.desktop", "productName": "FlipClock Desktop", "win": { "target": ["nsis"] } }
+}

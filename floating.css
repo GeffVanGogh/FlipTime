@@ -1,0 +1,722 @@
+/* ═══════════════════════════════════════════════════════════════
+   FlipClock Desktop — floating.css  (redesigned)
+   Single-source-of-truth for the transparent Electron window UI
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1. Shell transparency ─────────────────────────────────── */
+html, body,
+.app-shell, .main,
+.page, .page.active,
+.page-clock, .clock-layout, .clock-stage,
+.dock-cluster,
+.page.active:not(#page-clock) {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html, body { overflow: hidden; }
+.footer { display: none !important; }
+
+/* ── 2. Base resets ─────────────────────────────────────────── */
+button, input, select { font-family: inherit; }
+[hidden] { display: none !important; }
+.control-card, .tool-card, .tool-dock, .resize-grip, .icon-btn,
+.flip-panel, .saver-digit, .screensaver {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.controls-hidden .dock-cluster,
+body.controls-hidden .topbar,
+body.controls-hidden .icon-btn {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* ── 3. Main layout ─────────────────────────────────────────── */
+.main {
+  position: relative;
+  width: 100%; max-width: none;
+  height: 100vh; min-height: 255px;
+  padding: 0; margin: 0;
+}
+.sidebar { display: none !important; }
+.clock-layout { display: contents; }
+
+/* ── 4. Clock stage (full-window transparent canvas) ────────── */
+.clock-stage {
+  position: fixed; z-index: 0;
+  inset: 0;
+  display: block;
+  min-height: 100vh; width: 100vw;
+  border: 0; border-radius: 0;
+  background: transparent !important;
+  overflow: hidden;
+  -webkit-app-region: no-drag;
+  pointer-events: auto;
+}
+.clock-stage::before,
+.stage-badge,
+.clock-date { display: none !important; }
+
+/* ── 5. Clock face grid ─────────────────────────────────────── */
+.clock-face {
+  position: absolute !important;
+  inset: 11% 5.5% 11% !important;
+  width: auto; height: auto;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+  align-items: stretch;
+  gap: 3.8% !important;
+  transform: scale(var(--clock-size, 1));
+  transform-origin: center;
+}
+.clock-face.vertical {
+  inset: 9% 14% 15% !important;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 2.4% !important;
+}
+
+/* ── 6. Flip panels ─────────────────────────────────────────── */
+.flip-panel {
+  position: relative;
+  min-width: 0; min-height: 0;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--fc-edge, rgba(255,255,255,.05));
+  border-radius: var(--radius, 28px);
+  background: linear-gradient(to bottom,
+      var(--fc-card-top, #141416) 0 50%,
+      var(--fc-card-bottom, #0E0E10) 50% 100%);
+  box-shadow: var(--fc-card-shadow, 0 12px 30px rgba(0,0,0,.45), 0 4px 8px rgba(0,0,0,.35));
+  container-type: size;
+  cursor: move;
+  transition: background .22s ease, border-color .22s ease, box-shadow .22s ease;
+  -webkit-app-region: no-drag !important;
+  pointer-events: auto;
+}
+
+#clockStage[data-theme=dark] .flip-panel {
+  --fc-card-top: #141416; --fc-card-bottom: #0E0E10;
+  --fc-edge: rgba(255,255,255,.05);
+}
+#clockStage[data-theme=light] .flip-panel {
+  --fc-card-top: #FFFFFF; --fc-card-bottom: #F7F7F9;
+  --fc-edge: rgba(0,0,0,.05);
+  --fc-card-shadow: 0 12px 30px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.05);
+}
+#clockStage[data-theme=glass] .flip-panel {
+  --fc-card-top: rgba(20,23,31,.86); --fc-card-bottom: rgba(12,14,20,.92);
+  --fc-edge: rgba(255,255,255,.12);
+  --fc-card-shadow: 0 16px 40px rgba(0,0,0,.5), 0 4px 8px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.1);
+}
+#clockStage[data-theme=sand] .flip-panel {
+  --fc-card-top: #FFFDF8; --fc-card-bottom: #F4EEE2;
+  --fc-edge: rgba(70,50,20,.07);
+  --fc-card-shadow: 0 12px 30px rgba(80,60,30,.12), 0 4px 8px rgba(80,60,30,.06);
+}
+
+/* ── 7. Digit numbers ───────────────────────────────────────── */
+.digit {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%; min-width: 0;
+  padding: 0; border: 0;
+  border-radius: inherit;
+  background: transparent;
+  box-shadow: none;
+  font: 600 clamp(48px, 54cqh, 360px) / 1 'Segoe UI Variable Display', 'Segoe UI', Arial, sans-serif;
+  letter-spacing: -.03em;
+  color: #fff;
+  text-shadow: none;
+  perspective: 900px;
+  transform-style: preserve-3d;
+  overflow: visible;
+}
+
+#clockStage[data-theme=dark]     .digit { color: #E8E8EA; background: transparent; text-shadow: none; }
+#clockStage[data-theme=light]    .digit { color: #1D1D1F; background: transparent; text-shadow: none; }
+#clockStage[data-theme=glass] .digit { color: #F2F4F8; background: transparent; text-shadow: none; }
+#clockStage[data-theme=sand]     .digit { color: #2B2620; background: transparent; text-shadow: none; }
+
+#clockStage #hours,
+#clockStage #minutes {
+  font-family: 'Segoe UI Variable Display', 'Segoe UI', Arial, sans-serif;
+  font-weight: 600;
+}
+
+/* ── 8. Hinge fold — a quiet 0.5px hairline ─────────────────── */
+.flip-panel {
+  --fc-fold: #000;
+  --fc-fold-glint: transparent;
+}
+.flip-panel::before { display: block !important; content: none !important; }
+#clockStage[data-style=professional] .flip-panel::before {
+  content: "" !important;
+  position: absolute; z-index: 6;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 2% 7% at 0% 50%, var(--fc-fold) 98%, transparent 100%),
+    radial-gradient(ellipse 2% 7% at 100% 50%, var(--fc-fold) 98%, transparent 100%);
+}
+.flip-panel::after {
+  display: block !important;
+  content: "" !important;
+  position: absolute; z-index: 5;
+  top: 50%; left: 0; right: 0;
+  height: .5px;
+  transform: translateY(-50%);
+  background: var(--fc-fold);
+  box-shadow: 0 .5px 0 var(--fc-fold-glint);
+  pointer-events: none;
+}
+#clockStage[data-theme=light] .flip-panel { --fc-fold: #C7C7CC; --fc-fold-glint: rgba(255,255,255,.9); }
+#clockStage[data-theme=glass] .flip-panel { --fc-fold: rgba(0,0,0,.55); --fc-fold-glint: rgba(255,255,255,.14); }
+#clockStage[data-theme=sand]  .flip-panel { --fc-fold: #D6CAB3; --fc-fold-glint: rgba(255,255,255,.6); }
+#clockStage[data-style=standard] .flip-panel::after {
+  box-shadow: 0 .5px 0 var(--fc-fold-glint), 0 -5px 10px rgba(0,0,0,.16), 0 5px 10px rgba(0,0,0,.2);
+}
+#clockStage[data-style=professional] .flip-panel::after {
+  box-shadow: 0 .5px 0 var(--fc-fold-glint), 0 -8px 16px rgba(0,0,0,.24), 0 8px 16px rgba(0,0,0,.28);
+}
+
+/* ── 9. Corner labels (date, day, seconds, AM/PM) ───────────── */
+.panel-top, .panel-bottom {
+  position: absolute; z-index: 2;
+  font-family: 'Segoe UI Variable Text', 'Segoe UI', Arial, sans-serif;
+  font-size: clamp(12px, 5cqh, 22px);
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: .01em;
+  pointer-events: none;
+  user-select: none;
+}
+.flip-panel .panel-top    { top: 9cqh;    left: 11cqw; right: auto; }
+.flip-panel .panel-bottom { bottom: 8cqh; left: 11cqw; right: auto; }
+.flip-panel.minutes-panel .panel-top    { left: auto; right: 11cqw; }
+.flip-panel.minutes-panel .panel-bottom { left: auto; right: 11cqw; }
+
+#clockStage[data-theme=dark]     .panel-top  { color: #7e8fa9; }
+#clockStage[data-theme=dark]     .panel-bottom { color: #c2cce6; }
+#clockStage[data-theme=light]    .panel-top,
+#clockStage[data-theme=light]    .panel-bottom { color: #5b5c63; }
+#clockStage[data-theme=glass] .panel-top  { color: rgba(255, 255, 255, .72); }
+#clockStage[data-theme=glass] .panel-bottom { color: rgba(255, 255, 255, .94); }
+#clockStage[data-theme=sand]     .panel-top,
+#clockStage[data-theme=sand]     .panel-bottom { color: #4c433a; }
+
+/* Seconds display */
+#clockStage .minutes-panel #seconds {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 14cqw;
+  min-width: 23cqw;
+  padding: 0 1.5cqw;
+  border-radius: 3cqw;
+  background: rgba(255, 255, 255, .035);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05);
+  line-height: 1;
+  font-family: 'Segoe UI Variable Display', 'Segoe UI', Arial, sans-serif;
+  font-size: 6.3cqw;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: #E8E8EA;
+}
+#clockStage[data-theme=light] .minutes-panel #seconds { background: rgba(0,0,0,.03); box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); color: #1D1D1F; }
+#clockStage[data-theme=glass] .minutes-panel #seconds { background: rgba(255,255,255,.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,.1); color: #F2F4F8; }
+#clockStage[data-theme=sand]  .minutes-panel #seconds { background: rgba(70,50,20,.04); box-shadow: inset 0 0 0 1px rgba(70,50,20,.08); color: #2B2620; }
+
+/* ── 10. Flip animation (DOM half-card approach) ────────────── */
+.digit::before,
+.digit::after { display: none !important; content: none !important; animation: none !important; }
+.digit.flipping { animation: none !important; }
+
+.digit-half {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font: inherit; line-height: 1;
+  letter-spacing: inherit; color: inherit; text-shadow: inherit;
+  pointer-events: none;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+.digit-half-top {
+  z-index: 2;
+  clip-path: inset(0 0 50% 0);
+  transform-origin: 50% 50%;
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, .13), rgba(255, 255, 255, .02));
+}
+.digit-half-bottom {
+  z-index: 2;
+  clip-path: inset(50% 0 0 0);
+  transform-origin: 50% 50%;
+  background-image: linear-gradient(180deg, rgba(0, 0, 0, .24), rgba(0, 0, 0, .06));
+}
+.digit-flap { z-index: 3; border-radius: inherit; }
+.digit-flap-top { background: var(--fc-card-top, #141416); }
+.digit-flap-bottom { background: var(--fc-card-bottom, #0E0E10); }
+#clockStage[data-theme=glass] .digit-flap { border: 1px solid rgba(255,255,255,.12); }
+
+#clockStage[data-style=simple] { --fc-flip-dur: .38s; }
+#clockStage[data-style=standard] { --fc-flip-dur: .72s; }
+#clockStage[data-style=professional] { --fc-flip-dur: .56s; }
+
+.digit-flap-top {
+  clip-path: inset(0 0 50% 0);
+  transform-origin: 50% 50%;
+}
+.digit-flap-bottom {
+  clip-path: inset(50% 0 0 0);
+  transform-origin: 50% 50%;
+  transform: rotateX(90.5deg);
+}
+.digit-flap:after {
+  content: "";
+  position: absolute; inset: 0;
+  background: rgba(0, 0, 0, .14);
+  opacity: 0;
+  pointer-events: none;
+}
+
+#clockStage[data-style=simple] .digit-flap-top {
+  animation: flipSimpleTop var(--fc-flip-dur) cubic-bezier(.25,.1,.25,1) forwards;
+}
+#clockStage[data-style=simple] .digit-flap-bottom {
+  animation: flipSimpleBottom var(--fc-flip-dur) cubic-bezier(.25,.1,.25,1) forwards;
+}
+#clockStage[data-style=simple] .digit-flap:after { display: none; }
+
+#clockStage[data-style=standard] .digit-flap-top {
+  animation: flipStandardTop var(--fc-flip-dur) linear forwards;
+}
+#clockStage[data-style=standard] .digit-flap-bottom {
+  animation: flipStandardBottom var(--fc-flip-dur) linear forwards;
+}
+#clockStage[data-style=standard] .digit-flap-top:after {
+  animation: fcDimIn var(--fc-flip-dur) linear forwards;
+}
+#clockStage[data-style=standard] .digit-flap-bottom:after {
+  animation: fcDimOut var(--fc-flip-dur) linear forwards;
+}
+
+#clockStage[data-style=professional] .digit-flap-top {
+  animation: flipProTop var(--fc-flip-dur) linear forwards;
+}
+#clockStage[data-style=professional] .digit-flap-bottom {
+  animation: flipProBottom var(--fc-flip-dur) linear forwards;
+}
+#clockStage[data-style=professional] .digit-flap-top:after {
+  animation: fcDimInPro var(--fc-flip-dur) linear forwards;
+}
+#clockStage[data-style=professional] .digit-flap-bottom:after {
+  animation: fcDimOutPro var(--fc-flip-dur) linear forwards;
+}
+
+@keyframes flipSimpleTop { from { transform: rotateX(0); } to { transform: rotateX(-180deg); } }
+@keyframes flipSimpleBottom { from { transform: rotateX(180deg); } to { transform: rotateX(0); } }
+@keyframes flipStandardTop {
+  0% { transform: rotateX(0); animation-timing-function: cubic-bezier(.5,0,.85,.45); }
+  45%, 100% { transform: rotateX(-90.5deg); }
+}
+@keyframes flipStandardBottom {
+  0%, 45% { transform: rotateX(90.5deg); animation-timing-function: cubic-bezier(.2,.55,.35,1); }
+  68% { transform: rotateX(-7deg); animation-timing-function: cubic-bezier(.25,.1,.25,1); }
+  80% { transform: rotateX(4deg); animation-timing-function: cubic-bezier(.25,.1,.25,1); }
+  89% { transform: rotateX(-2deg); animation-timing-function: cubic-bezier(.25,.1,.25,1); }
+  95% { transform: rotateX(1deg); animation-timing-function: ease-out; }
+  100% { transform: rotateX(0); }
+}
+@keyframes flipProTop {
+  0% { transform: rotateX(0); animation-timing-function: cubic-bezier(.55,0,.9,.45); }
+  50%, 100% { transform: rotateX(-91deg); }
+}
+@keyframes flipProBottom {
+  0%, 50% { transform: rotateX(91deg); animation-timing-function: cubic-bezier(.15,.6,.45,1); }
+  86% { transform: rotateX(0); animation-timing-function: ease-out; }
+  93% { transform: rotateX(7deg); animation-timing-function: ease-in; }
+  100% { transform: rotateX(0); }
+}
+@keyframes fcDimIn { 0% { opacity: 0; } 45%, 100% { opacity: 1; } }
+@keyframes fcDimOut { 0%, 45% { opacity: 1; } 68%, 100% { opacity: 0; } }
+@keyframes fcDimInPro { 0% { opacity: 0; } 50%, 100% { opacity: 1; } }
+@keyframes fcDimOutPro { 0%, 50% { opacity: 1; } 86%, 100% { opacity: 0; } }
+
+/* ── 11. Topbar: pin + close buttons ───────────────────────── */
+.topbar {
+  position: fixed; z-index: 65;
+  left: var(--floating-controls-x, calc(100vw - 74px));
+  top: var(--floating-controls-y, 20px);
+  right: auto;
+  margin: 0; padding: 0;
+  -webkit-app-region: no-drag;
+  pointer-events: none;
+}
+.topbar-actions { pointer-events: auto; }
+.topbar h1, .topbar .eyebrow { display: none; }
+.topbar-actions { display: flex; gap: clamp(4px, .8vw, 8px); }
+
+.icon-btn {
+  width: clamp(24px, 5.5vh, 34px);
+  height: clamp(24px, 5.5vh, 34px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  background: rgba(10, 11, 16, .65);
+  color: rgba(210, 215, 228, .8);
+  font-size: clamp(12px, 2.6vh, 17px);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease, background .18s ease, color .18s ease;
+  -webkit-app-region: no-drag;
+}
+.main:hover .icon-btn,
+.topbar:focus-within .icon-btn { opacity: 1; pointer-events: auto; }
+.icon-btn:hover { background: rgba(255, 255, 255, .13); color: #fff; }
+
+.close-btn {
+  font-size: clamp(14px, 3vh, 20px); line-height: 1;
+  background: rgba(55, 18, 18, .75);
+  color: rgba(255, 180, 180, .9);
+  border-color: rgba(130, 50, 50, .6);
+}
+.close-btn:hover { background: #b03333; color: #fff; border-color: #d05050; }
+
+.pin-btn { font-size: clamp(12px, 2.5vh, 16px); }
+.pin-btn svg {
+  display: block;
+  width: clamp(11px, 2.6vh, 16px); height: clamp(11px, 2.6vh, 16px);
+  fill: none; stroke: currentColor;
+  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+.pin-btn.pinned {
+  border-color: rgba(110, 168, 255, .6);
+  background: rgba(110, 168, 255, .15);
+  color: #bcd8ff;
+}
+
+/* ── 12. Tool dock (bottom pill) ────────────────────────────── */
+.dock-cluster {
+  position: fixed; z-index: 55;
+  left: var(--floating-toolbar-x, 50vw);
+  top: var(--floating-toolbar-y, calc(100vh - 30px));
+  bottom: auto;
+  transform: translate(-50%, -50%) scale(var(--widget-scale, 1));
+  transform-origin: center center;
+  opacity: 0; pointer-events: none;
+  transition: opacity .18s ease;
+  -webkit-app-region: no-drag;
+}
+body:hover .dock-cluster,
+.dock-cluster:hover,
+.dock-cluster:focus-within { opacity: 1; pointer-events: auto; }
+
+.tool-dock {
+  display: flex; align-items: center;
+  gap: 2px;
+  padding: 5px 7px;
+  border: 1px solid rgba(255, 255, 255, .09);
+  border-radius: 20px;
+  background: rgba(9, 10, 15, .86);
+  box-shadow: 0 1px 0 rgba(255,255,255,.04) inset;
+  -webkit-app-region: no-drag;
+}
+#openTools { display: none !important; }
+
+.tool-dock button {
+  position: relative;
+  width: clamp(28px, 5vh, 33px);
+  height: clamp(28px, 5vh, 33px);
+  flex: 0 0 clamp(28px, 5vh, 33px);
+  padding: 0; border: 0; border-radius: 50%;
+  background: transparent;
+  color: rgba(168, 171, 185, .85);
+  font: clamp(13px, 2.5vh, 17px) / 1 'Segoe UI Symbol', 'Segoe UI', sans-serif;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+.tool-dock button:hover,
+.tool-dock button:focus-visible {
+  background: rgba(255, 255, 255, .1);
+  color: #f0f1f5;
+  outline: none;
+}
+.tool-dock button.active {
+  color: #9CC6FF;
+  background: rgba(110, 168, 255, .16);
+}
+.tool-dock button::after {
+  content: attr(title);
+  position: absolute;
+  left: 50%; bottom: calc(100% + 7px);
+  transform: translate(-50%, 4px);
+  padding: 4px 8px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 7px;
+  background: rgba(10, 11, 16, .97);
+  color: #dde0ea;
+  font: 10px / 1.3 'Segoe UI', sans-serif;
+  white-space: nowrap;
+  opacity: 0; pointer-events: none;
+  transition: opacity .12s ease, transform .12s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .5);
+}
+.tool-dock button:hover::after,
+.tool-dock button:focus-visible::after { opacity: 1; transform: translate(-50%, 0); }
+
+/* ── 13. Resize grip (docked beside the tool pill) ──────────── */
+.resize-grip {
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 0; bottom: 0;
+  aspect-ratio: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px;
+  padding: 0;
+  cursor: nwse-resize;
+  border: 1px solid rgba(255, 255, 255, .09);
+  border-radius: 20px;
+  background: rgba(9, 10, 15, .86);
+  box-shadow: 0 1px 0 rgba(255,255,255,.04) inset;
+  transition: background .16s ease;
+  -webkit-app-region: no-drag;
+}
+.resize-grip:hover { background: rgba(255, 255, 255, .14); }
+.resize-grip i {
+  display: block; height: 1px;
+  background: rgba(170, 205, 255, .85);
+  transform: rotate(-45deg);
+  transform-origin: center;
+}
+.resize-grip i:nth-child(1) { width: 6px; }
+.resize-grip i:nth-child(2) { width: 9px; }
+.resize-grip i:nth-child(3) { width: 12px; }
+.resize-grip::after {
+  content: 'Resize';
+  position: absolute;
+  left: 50%; bottom: calc(100% + 8px);
+  transform: translate(-50%, 4px);
+  padding: 4px 8px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 7px;
+  background: rgba(10, 11, 16, .97);
+  color: #dde0ea;
+  font: 10px / 1.3 'Segoe UI', sans-serif;
+  white-space: nowrap;
+  opacity: 0; pointer-events: none;
+  transition: opacity .12s ease, transform .12s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .5);
+}
+.resize-grip:hover::after { opacity: 1; transform: translate(-50%, 0); }
+
+/* ── 14. Settings panel ─────────────────────────────────────── */
+.control-card {
+  display: none;
+  position: fixed; z-index: 40;
+  top: clamp(14px, 2.5vh, 20px);
+  right: clamp(14px, 2vw, 20px);
+  bottom: clamp(14px, 2.5vh, 20px);
+  width: min(390px, calc(var(--side-panel-width, 430px) - 36px));
+  max-width: 390px;
+  overflow-y: auto;
+  border-radius: 24px;
+  background: rgba(12, 14, 20, .9);
+  border: 1px solid rgba(255, 255, 255, .12);
+  box-shadow: 0 1px 0 rgba(255,255,255,.05) inset;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200, 202, 208, .28) transparent;
+  -webkit-app-region: no-drag;
+}
+.control-card::-webkit-scrollbar { width: 5px; }
+.control-card::-webkit-scrollbar-track { background: transparent; }
+.control-card::-webkit-scrollbar-thumb { border-radius: 6px; background: rgba(200, 202, 208, .28); }
+
+body.settings-open .control-card { display: block; }
+
+/* ── 15. Clock ↔ side-panel split ───────────────────────────── */
+body.settings-open  #clockStage,
+body.tool-page-open #clockStage {
+  left: 0 !important; right: auto !important;
+  top: calc((100vh - var(--clock-stage-height, 100vh)) / 2) !important;
+  bottom: auto !important;
+  width:  var(--clock-stage-width,  100vw) !important;
+  height: var(--clock-stage-height, 100vh) !important;
+  min-height: 0 !important;
+}
+body.settings-open  .resize-grip,
+body.tool-page-open .resize-grip { display: none; }
+
+/* ── 16. Page visibility ────────────────────────────────────── */
+.page         { display: none; }
+.page.active  { display: block; }
+
+/* ── 17. Tool overlay cards ─────────────────────────────────── */
+body.tool-page-open .page.active:not(#page-clock) {
+  --dock-clearance: calc(clamp(10px, 3vh, 18px) + (clamp(28px, 5vh, 33px) + 12px) * var(--widget-scale, 1) + 12px);
+  position: fixed; z-index: 20;
+  inset: 0;
+  display: grid; place-items: center;
+  width: auto;
+  padding: calc(14px / var(--widget-scale, 1))
+           calc(10px / var(--widget-scale, 1))
+           calc(var(--dock-clearance) - 14px + 14px / var(--widget-scale, 1));
+  background: transparent !important;
+  backdrop-filter: none !important;
+  overflow: hidden !important;
+}
+body.tool-page-open .page.active:not(#page-clock) .tool-card {
+  width: min(420px, calc(100vw / var(--widget-scale, 1) - 20px));
+  max-width: 420px;
+  max-height: calc((100vh - 14px - var(--dock-clearance)) / var(--widget-scale, 1));
+  min-height: 0; margin: 0;
+  padding: 14px 16px;
+  border-radius: 20px;
+  background: rgba(11, 13, 20, .93);
+  border: 1px solid rgba(255, 255, 255, .11);
+
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200, 202, 208, .28) transparent;
+  transform: scale(var(--widget-scale, 1));
+  transform-origin: center center;
+  -webkit-app-region: no-drag;
+}
+body.tool-page-open .page.active:not(#page-clock) .tool-card.wide-card {
+  width: min(420px, calc(100vw / var(--widget-scale, 1) - 20px));
+  max-width: 420px;
+}
+
+/* Compact tool typography */
+body.tool-page-open .tool-card .eyebrow      { font-size: 8px; }
+body.tool-page-open .tool-card h2            { font-size: 17px; margin: 3px 0 7px; }
+body.tool-page-open .tool-card .muted        { display: none; }
+body.tool-page-open .tool-dial               { font-size: clamp(28px, 11vh, 46px); padding: 6px 0; letter-spacing: -1px; }
+body.tool-page-open .study-tabs              { margin-top: 7px; }
+body.tool-page-open .study-tabs button       { padding: 5px 3px; font-size: 9px; }
+body.tool-page-open .tool-actions            { gap: 6px; margin-top: 7px; }
+body.tool-page-open .button                  { padding: 7px 10px; font-size: 10px; }
+body.tool-page-open .time-inputs             { margin-top: 8px; gap: 7px; }
+body.tool-page-open .time-inputs input       { width: 66px; padding: 6px; font-size: 20px; }
+body.tool-page-open .date-input              { margin: 7px 0; gap: 4px; }
+body.tool-page-open .date-input input        { padding: 7px; font-size: 11px; }
+body.tool-page-open .alarm-form,
+body.tool-page-open .world-form              { gap: 5px; margin: 6px 0; }
+body.tool-page-open .alarm-form input,
+body.tool-page-open .world-form input,
+body.tool-page-open .world-form select       { min-width: 0; padding: 6px; font-size: 10px; }
+body.tool-page-open #worldGrid               { gap: 5px; margin-top: 6px; }
+body.tool-page-open .world-card              { padding: 7px; }
+body.tool-page-open .world-card strong       { font-size: 18px; margin-top: 4px; }
+body.tool-page-open .world-card small        { display: none; }
+body.tool-page-open #holidayList             { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; margin-top: 5px; border: 0; }
+body.tool-page-open #holidayList .list-row   { min-width: 0; gap: 3px; padding: 4px 5px; border: 1px solid rgba(150,170,205,.13); border-radius: 6px; font-size: 9px; line-height: 1.1; }
+body.tool-page-open #holidayList .list-row b { font-size: 9px; white-space: nowrap; }
+body.tool-page-open .footnote                { display: none; }
+body.tool-page-open #alarmList               { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; margin-top: 5px; max-height: 54px; overflow: hidden; border: 0; }
+body.tool-page-open #alarmList .list-row     { padding: 4px; border: 1px solid rgba(150,170,205,.13); border-radius: 6px; font-size: 9px; line-height: 1.1; }
+body.tool-page-open .laps                    { max-height: 42px; overflow: hidden; margin-top: 7px; }
+
+/* Stopwatch font and weight */
+#page-stopwatch,
+#page-stopwatch .tool-card,
+#page-stopwatch .tool-dial,
+#page-stopwatch .button,
+#page-stopwatch .lap-row {
+  font-family: "Helvetica Neue", "HelveticaNeue", Helvetica, Arial, "Segoe UI", sans-serif;
+}
+#page-stopwatch .eyebrow   { font-weight: 800; }
+#page-stopwatch h2         { font-weight: 800; }
+#page-stopwatch .tool-dial { font-weight: 700; font-variant-numeric: tabular-nums; }
+#page-stopwatch .button    { font-weight: 700; }
+#page-stopwatch .lap-row   { font-weight: 600; }
+
+/* ── 18. Toast notifications ────────────────────────────────── */
+.toast {
+  position: fixed; z-index: 60;
+  bottom: clamp(16px, 3vh, 24px);
+  right: clamp(16px, 2vw, 24px);
+  padding: 10px 15px;
+  border-radius: 10px;
+  background: #6EA8FF;
+  color: #08111F;
+  font-size: 11px; font-weight: 600;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .35);
+  display: none;
+  -webkit-app-region: no-drag;
+}
+.toast.show { display: block; }
+
+/* ── 19. Screensaver overlay ────────────────────────────────── */
+.screensaver {
+  position: fixed; inset: 0; z-index: 70;
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: rgba(6, 7, 10, .97);
+  color: #fff;
+  cursor: none;
+}
+.screensaver.active { display: flex; }
+#screensaver[data-theme=glass] { background: rgba(8, 12, 22, .42); }
+#screensaver[data-theme=glass] .saver-date { color: rgba(255, 255, 255, .8); }
+#screensaver[data-theme=glass] .saver-hint { color: rgba(255, 255, 255, .6); }
+.saver-hint {
+  position: absolute; bottom: 24px;
+  color: rgba(130, 133, 148, .7);
+  font-size: 11px;
+  opacity: 0; transition: opacity .3s;
+}
+.screensaver:hover .saver-hint { opacity: 1; }
+
+/* ── 20. Scrollbars in tool overlays ───────────────────────── */
+.page.active:not(#page-clock) {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200,202,208,.3) transparent;
+}
+.page.active:not(#page-clock)::-webkit-scrollbar,
+.tool-card::-webkit-scrollbar { width: 5px; height: 5px; }
+.page.active:not(#page-clock)::-webkit-scrollbar-track,
+.tool-card::-webkit-scrollbar-track { background: transparent; }
+.page.active:not(#page-clock)::-webkit-scrollbar-thumb,
+.tool-card::-webkit-scrollbar-thumb { border-radius: 6px; background: rgba(200,202,208,.3); }
+
+/* ── 21. Switch disabled state ──────────────────────────────── */
+.switch input:disabled + i { opacity: .4; cursor: not-allowed; }
+
+html, body { min-width: 400px; min-height: 100%; }
+
+.screensaver-strip {
+  margin-top: 18px;
+  padding: 13px;
+  border: 1px solid #333;
+  border-radius: 10px;
+  background: #202126;
+}
+
+.screensaver-strip b { font-size: 11px; }
+
+.screensaver-strip p { max-width: 145px; line-height: 1.5; }
+
+.saver-options { gap: 7px; }
+
+.saver-options select { max-width: 106px; }
+
+@media (max-height: 420px) {
+  .flip-panel { box-shadow: 0 6px 14px rgba(0, 0, 0, .28) !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .digit-flap-top, .digit-flap-bottom,
+  .digit-flap-top:after, .digit-flap-bottom:after {
+    animation-duration: .01ms !important;
+    animation-delay: 0s !important;
+  }
+  .dock-cluster, .topbar, .icon-btn { transition-duration: .01ms !important; }
+}
