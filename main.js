@@ -10,6 +10,15 @@ let idleAfter = 300;
 let prePanelBounds = null;
 let pinned = false;
 
+function trusted(event) {
+  const url = event?.senderFrame?.url || event?.sender?.getURL?.() || '';
+  return url.startsWith('file://') && url.replace(/\\/g, '/').endsWith('/index.html');
+}
+const on = (channel, handler) => ipcMain.on(channel, (event, ...args) => {
+  if (!trusted(event)) return;
+  handler(event, ...args);
+});
+
 function clampToWorkArea(bounds, display = screen.getDisplayMatching(bounds)) {
   const area = display.workArea;
   return {
@@ -65,28 +74,29 @@ function exitScreensaver() {
 
 app.whenReady().then(() => {
   createWindow();
-  ipcMain.on('screensaver:settings', (_event, settings) => {
-    idleAfter = Math.max(60, Number(settings.seconds) || 300);
+  on('screensaver:settings', (_event, settings) => {
+    const s = settings && typeof settings === 'object' ? settings : {};
+    idleAfter = Math.max(60, Number(s.seconds) || 300);
     if (idleTimer) clearInterval(idleTimer);
     idleTimer = setInterval(() => {
       if (!win || manualPreview) return;
-      if (!settings.enabled) { if (screensaverActive) exitScreensaver(); return; }
+      if (!s.enabled) { if (screensaverActive) exitScreensaver(); return; }
       const idle = powerMonitor.getSystemIdleTime();
       if (idle >= idleAfter) enterScreensaver();
       else if (screensaverActive) exitScreensaver();
     }, 1000);
   });
-  ipcMain.on('screensaver:preview', () => enterScreensaver(true));
-  ipcMain.on('screensaver:exit', () => exitScreensaver());
-  ipcMain.on('window:close', () => win?.close());
-  ipcMain.on('window:toggle-pin', () => {
+  on('screensaver:preview', () => enterScreensaver(true));
+  on('screensaver:exit', () => exitScreensaver());
+  on('window:close', () => win?.close());
+  on('window:toggle-pin', () => {
     if (!win) return;
     pinned = !pinned;
     win.setAlwaysOnTop(true, 'floating');
     win.webContents.send('window:pinned-state', pinned);
   });
-  ipcMain.on('window:minimize', () => win?.minimize());
-  ipcMain.on('window:resize-to', (_event, requestedSize) => {
+  on('window:minimize', () => win?.minimize());
+  on('window:resize-to', (_event, requestedSize) => {
     if (!win || screensaverActive) return;
     const width = Number(requestedSize?.width), height = Number(requestedSize?.height);
     if (!Number.isFinite(width) || !Number.isFinite(height) || width < 1 || height < 1) return;
@@ -95,7 +105,7 @@ app.whenReady().then(() => {
     const bounds = clampToWorkArea({ ...win.getBounds(), width: Math.max(400, Math.round(width * scale)), height: Math.max(255, Math.round(height * scale)) }, display);
     win.setBounds(bounds, false);
   });
-  ipcMain.on('window:move-by', (_event, delta) => {
+  on('window:move-by', (_event, delta) => {
     if (!win || screensaverActive || pinned) return;
     const dx = Number(delta?.x), dy = Number(delta?.y);
     if (!Number.isFinite(dx) || !Number.isFinite(dy)) return;
@@ -103,7 +113,7 @@ app.whenReady().then(() => {
     const display = screen.getDisplayNearestPoint({ x: x + bounds.width / 2, y: y + bounds.height / 2 });
     win.setBounds(clampToWorkArea({ ...bounds, x, y }, display), false);
   });
-  ipcMain.on('window:side-panel', (_event, request) => {
+  on('window:side-panel', (_event, request) => {
     if (!win || screensaverActive) return;
     const open = typeof request === 'object' ? !!request.open : !!request;
     const panelType = typeof request === 'object' ? request.type : 'settings';

@@ -1,6 +1,6 @@
 # FlipTime
 
-FlipTime is a Windows desktop implementation inspired by the AFlipClock website. The clock face is the home screen: two large flip panels with the date and AM/PM on the hour card, and the weekday and live seconds on the minute card. The packaged desktop window is frameless, transparent around the cards, draggable, and always on top. Settings open from the gear; timers and other tools stay in a separate tools drawer.
+FlipTime is a Windows desktop flip clock and clock tools suite. The clock face is the home screen: two large flip panels with the date and AM/PM on the hour card, and the weekday and live seconds on the minute card. The packaged desktop window is frameless, transparent around the cards, draggable, and always on top. Settings open from the gear; timers and other tools stay in a separate tools drawer.
 
 ## Included
 
@@ -32,4 +32,4 @@ The installer is created in the `dist` folder. Electron and electron-builder are
 
 ## Notes
 
-This is an original implementation of the general flip-clock idea, not a copy of AFlipClock's source, branding, or assets. The idle display is managed by the app while it is running; Windows does not yet launch it as a native `.scr` screensaver. Alarm reminders also require the app to remain open. Holidays are a practical calendar selection rather than a complete official public-holiday feed.
+This is an original implementation of the general flip-clock idea and contains no third-party clock code, branding, or assets. The idle display is managed by the app while it is running; Windows does not yet launch it as a native `.scr` screensaver. Alarm reminders also require the app to remain open. Holidays are a practical calendar selection rather than a complete official public-holiday feed.
