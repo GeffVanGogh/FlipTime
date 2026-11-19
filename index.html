@@ -22,7 +22,7 @@
     <div class="sidebar-bottom"><span class="status-dot"></span> All times use your device clock</div>
   </aside>
   <main class="main">
-    <header class="topbar"><div class="topbar-actions"><button type="button" class="icon-btn pin-btn" id="pinApp" title="Lock clock in place" aria-label="Lock clock in place"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m16 3 5 5-5 1.5-4.5 4.5-1.5 5-3-3-3-3 5-1.5L13 7z"/><path d="m4 20 6-6"/></svg></button><button type="button" class="icon-btn close-btn" id="closeApp" title="Close app" aria-label="Close app">×</button></div></header>
+    <header class="topbar"><div class="topbar-actions"><button type="button" class="icon-btn pin-btn" id="pinApp" title="Lock clock position" aria-label="Lock clock position"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m16 3 5 5-5 1.5-4.5 4.5-1.5 5-3-3-3-3 5-1.5L13 7z"/><path d="m4 20 6-6"/></svg></button><button type="button" class="icon-btn close-btn" id="closeApp" title="Close app" aria-label="Close app">×</button></div></header>
     <section class="page active" id="page-clock">
       <div class="clock-layout">
         <div class="clock-stage" id="clockStage" data-theme="dark" data-layout="horizontal">
@@ -40,6 +40,7 @@
           <label class="field-label">DISPLAY</label><div class="switch-row"><span>24-hour format</span><label class="switch"><input type="checkbox" id="format24"><i></i></label></div>
           <div class="switch-row"><span>Show seconds</span><label class="switch"><input type="checkbox" id="showSeconds" checked><i></i></label></div>
           <div class="switch-row"><span>Show date</span><label class="switch"><input type="checkbox" id="showDate" checked><i></i></label></div>
+          <div class="switch-row"><span>Always on top</span><label class="switch"><input type="checkbox" id="alwaysOnTop" checked><i></i></label></div>
           <label class="field-label">LAYOUT</label><div class="segmented" id="layouts"><button class="selected" data-layout="auto">Auto</button><button data-layout="horizontal">Horizontal</button><button data-layout="vertical">Vertical</button></div>
           <label class="field-label range-label">SIZE <b id="sizeValue">100%</b></label><input class="range" id="sizeRange" type="range" min="65" max="120" value="100">
           <label class="field-label range-label">CORNER RADIUS <b id="radiusValue">14px</b></label><input class="range" id="radiusRange" type="range" min="0" max="30" value="14">

@@ -9,6 +9,7 @@ let preSaverBounds = null;
 let idleAfter = 300;
 let prePanelBounds = null;
 let pinned = false;
+let alwaysOnTop = true;
 
 function trusted(event) {
   const url = event?.senderFrame?.url || event?.sender?.getURL?.() || '';
@@ -36,7 +37,7 @@ function createWindow() {
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false }
   });
   win.setBounds(clampToWorkArea(win.getBounds(), screen.getPrimaryDisplay()));
-  win.setAlwaysOnTop(true, 'floating');
+  win.setAlwaysOnTop(alwaysOnTop, 'floating');
   win.loadFile('index.html');
   win.on('closed', () => { win = null; });
   win.on('blur', () => win?.webContents.send('window:blurred'));
@@ -57,6 +58,7 @@ function enterScreensaver(manual = false) {
   if (manual) manualPreview = true;
   preSaverBounds = win.getBounds();
   win.setAlwaysOnTop(true, 'screen-saver');
+  win.setIgnoreMouseEvents(false);
   win.setBounds(screensaverBounds(), false);
   win.webContents.send('screensaver:state', true);
 }
@@ -68,7 +70,8 @@ function exitScreensaver() {
     win.setBounds(preSaverBounds, false);
     preSaverBounds = null;
   }
-  win.setAlwaysOnTop(true, 'floating');
+  win.setAlwaysOnTop(alwaysOnTop, 'floating');
+  win.setIgnoreMouseEvents(pinned, { forward: true });
   win.webContents.send('screensaver:state', false);
 }
 
@@ -92,10 +95,18 @@ app.whenReady().then(() => {
   on('window:toggle-pin', () => {
     if (!win) return;
     pinned = !pinned;
-    win.setAlwaysOnTop(true, 'floating');
+    win.setIgnoreMouseEvents(pinned, { forward: true });
     win.webContents.send('window:pinned-state', pinned);
   });
+  on('window:set-click-through', (_event, enabled) => {
+    if (!win || !pinned || screensaverActive) return;
+    win.setIgnoreMouseEvents(!!enabled, { forward: true });
+  });
   on('window:minimize', () => win?.minimize());
+  on('window:set-always-on-top', (_event, enabled) => {
+    alwaysOnTop = !!enabled;
+    if (win && !screensaverActive) win.setAlwaysOnTop(alwaysOnTop, 'floating');
+  });
   on('window:resize-to', (_event, requestedSize) => {
     if (!win || screensaverActive) return;
     const width = Number(requestedSize?.width), height = Number(requestedSize?.height);

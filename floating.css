@@ -400,6 +400,9 @@ body.controls-hidden .icon-btn {
   background: rgba(110, 168, 255, .15);
   color: #bcd8ff;
 }
+body.pin-clickthrough .icon-btn { opacity: 0 !important; pointer-events: none !important; }
+body.pin-clickthrough.pin-hover .pin-btn { opacity: 1 !important; pointer-events: auto !important; }
+body.pin-clickthrough .dock-cluster { opacity: 0 !important; pointer-events: none !important; }
 
 /* ── 12. Tool dock (bottom pill) ────────────────────────────── */
 .dock-cluster {
