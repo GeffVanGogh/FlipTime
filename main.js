@@ -96,6 +96,7 @@ app.whenReady().then(() => {
     if (!win) return;
     pinned = !pinned;
     win.setIgnoreMouseEvents(pinned, { forward: true });
+    win.setMinimizable(!pinned);
     win.webContents.send('window:pinned-state', pinned);
   });
   on('window:set-click-through', (_event, enabled) => {
